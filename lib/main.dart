@@ -1,24 +1,7 @@
 import 'package:flutter/material.dart';
-
-abstract class AppColors {
-  static const Color primary = Colors.red;
-  static const Color appBarText = Colors.white;
-  static const Color buttonText = Colors.white;
-}
-
-abstract class AppString {
-  static const String appTitle = 'Pomodoro App';
-  static const String workTime = 'Work Time';
-  static const String runningTimer = '25:00';
-  static const String startTimer = 'Start Timer';
-  static const String resetTimer = 'Reset Timer';
-  static const String settingsTooltip = 'Settings';
-}
-
-abstract class AppMargin {
-  static const vertical20 = SizedBox(height: 20);
-  static const horizontal20 = SizedBox(width: 20);
-}
+import 'package:pomodoro_app/constants/app_colors.dart';
+import 'package:pomodoro_app/constants/app_padding.dart';
+import 'package:pomodoro_app/constants/app_strings.dart';
 
 void main() {
   runApp(const MyApp());
