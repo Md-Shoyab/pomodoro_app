@@ -1,7 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:pomodoro_app/constants/app_colors.dart';
 import 'package:pomodoro_app/constants/app_padding.dart';
 import 'package:pomodoro_app/constants/app_strings.dart';
+import 'package:pomodoro_app/bindings/time_binding.dart';
 
 void main() {
   runApp(const MyApp());
@@ -12,23 +16,19 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       title: AppString.appTitle,
       theme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple)),
+      initialBinding: TimeBinding(),
       home: PomodoroScreen(),
     );
   }
 }
 
-class PomodoroScreen extends StatefulWidget {
+class PomodoroScreen extends GetView<TimeController> {
   const PomodoroScreen({super.key});
 
-  @override
-  State<PomodoroScreen> createState() => _PomodoroScreenState();
-}
-
-class _PomodoroScreenState extends State<PomodoroScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -57,9 +57,11 @@ class _PomodoroScreenState extends State<PomodoroScreen> {
               style: TextStyle(fontSize: 32, fontWeight: FontWeight.w600),
             ),
             AppMargin.vertical20,
-            const Text(
-              AppString.runningTimer,
-              style: TextStyle(fontSize: 48, fontWeight: FontWeight.w600),
+            Obx(
+              () => Text(
+                '${controller.time.value.toString().padLeft(2, '0')}:${(controller.time.value % 60).toString().padLeft(2, '0')}',
+                style: TextStyle(fontSize: 48, fontWeight: FontWeight.w600),
+              ),
             ),
             AppMargin.vertical20,
             Row(
@@ -67,9 +69,7 @@ class _PomodoroScreenState extends State<PomodoroScreen> {
               children: [
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary),
-                  onPressed: () {
-                    // Start timer logic
-                  },
+                  onPressed: controller.startTimer,
                   child: const Text(
                     AppString.startTimer,
                     style: TextStyle(color: AppColors.buttonText),
@@ -92,5 +92,24 @@ class _PomodoroScreenState extends State<PomodoroScreen> {
         ),
       ),
     );
+  }
+}
+
+class TimeController extends GetxController {
+  var time = 1500.obs; // 25 minutes in seconds
+  Timer? timer;
+
+  void startTimer() {
+    timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      if (time.value > 0) {
+        time.value--;
+      } else {
+        timer.cancel();
+      }
+    });
+  }
+
+  void resetTimer() {
+    time.value = 1500; // Reset to 25 minutes
   }
 }
