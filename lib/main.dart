@@ -1,7 +1,6 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pomodoro_app/bindings/time_controller.dart';
 import 'package:pomodoro_app/constants/app_colors.dart';
 import 'package:pomodoro_app/constants/app_padding.dart';
 import 'package:pomodoro_app/constants/app_strings.dart';
@@ -57,35 +56,14 @@ class PomodoroScreen extends GetView<TimeController> {
               style: TextStyle(fontSize: 32, fontWeight: FontWeight.w600),
             ),
             AppMargin.vertical20,
-            Obx(
-              () => Text(
-                '${controller.time.value.toString().padLeft(2, '0')}:${(controller.time.value % 60).toString().padLeft(2, '0')}',
-                style: TextStyle(fontSize: 48, fontWeight: FontWeight.w600),
-              ),
-            ),
+            Obx(() => Text(controller.formattedTime, style: AppTextStyles.timerText)),
             AppMargin.vertical20,
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary),
-                  onPressed: controller.startTimer,
-                  child: const Text(
-                    AppString.startTimer,
-                    style: TextStyle(color: AppColors.buttonText),
-                  ),
-                ),
+                AppButton(label: AppString.startTimer, onPressed: controller.startTimer),
                 AppMargin.horizontal20,
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary),
-                  onPressed: () {
-                    // Start timer logic
-                  },
-                  child: const Text(
-                    AppString.resetTimer,
-                    style: TextStyle(color: AppColors.buttonText),
-                  ),
-                ),
+                AppButton(label: AppString.resetTimer, onPressed: controller.resetTimer),
               ],
             ),
           ],
@@ -95,21 +73,21 @@ class PomodoroScreen extends GetView<TimeController> {
   }
 }
 
-class TimeController extends GetxController {
-  var time = 1500.obs; // 25 minutes in seconds
-  Timer? timer;
+class AppButton extends StatelessWidget {
+  final String label;
+  final VoidCallback onPressed;
+  const AppButton({super.key, required this.label, required this.onPressed});
 
-  void startTimer() {
-    timer = Timer.periodic(Duration(seconds: 1), (timer) {
-      if (time.value > 0) {
-        time.value--;
-      } else {
-        timer.cancel();
-      }
-    });
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary),
+      onPressed: onPressed,
+      child: Text(label, style: const TextStyle(color: AppColors.buttonText)),
+    );
   }
+}
 
-  void resetTimer() {
-    time.value = 1500; // Reset to 25 minutes
-  }
+class AppTextStyles {
+  static const timerText = TextStyle(fontSize: 48, fontWeight: FontWeight.w600);
 }
