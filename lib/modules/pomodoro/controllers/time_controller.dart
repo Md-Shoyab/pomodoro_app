@@ -8,18 +8,20 @@ class TimeController extends GetxController {
   RxBool isRunning = false.obs;
 
   String get formattedTime {
-    final min = (remainingSeconds.value ~/ 60).toString().padLeft(2, '0');
-    final sec = (remainingSeconds.value % 60).toString().padLeft(2, '0');
-    return '$min:$sec';
+    final minute = (remainingSeconds.value ~/ 60).toString().padLeft(2, '0');
+    final seconds = (remainingSeconds.value % 60).toString().padLeft(2, '0');
+    return '$minute:$seconds';
   }
 
   void startTimer() {
     if (_timer != null && _timer!.isActive) return;
+    isRunning.value = true;
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (remainingSeconds.value > 0) {
         remainingSeconds.value--;
       } else {
         timer.cancel();
+        isRunning.value = false;
       }
     });
   }
@@ -27,6 +29,8 @@ class TimeController extends GetxController {
   void resetTimer() {
     remainingSeconds.value = pomodoroDuration;
     _timer?.cancel();
+    isRunning.value = false;
+    update();
   }
 
   void pauseTimer() {

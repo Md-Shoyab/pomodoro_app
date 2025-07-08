@@ -44,7 +44,13 @@ class PomodoroScreen extends GetView<TimeController> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                AppButton(label: AppString.startTimer, onPressed: controller.startTimer),
+                Obx(
+                  () => AppButton(
+                    label: controller.isRunning.value ? AppString.pauseTimer : AppString.startTimer,
+                    onPressed:
+                        controller.isRunning.value ? controller.pauseTimer : controller.startTimer,
+                  ),
+                ),
                 AppMargin.horizontal20,
                 AppButton(label: AppString.resetTimer, onPressed: controller.resetTimer),
               ],
