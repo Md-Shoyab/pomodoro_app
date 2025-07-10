@@ -14,50 +14,84 @@ class PomodoroScreen extends GetView<TimeController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          AppString.appTitle,
-          style: TextStyle(color: AppColors.appBarText, fontWeight: FontWeight.w600),
+      appBar: PomodoroAppBar(onSettingsPressed: _onSettingsPressed),
+      body: const PomodoroBody(),
+    );
+  }
+
+  void _onSettingsPressed() {
+    // Open drawer or menu
+  }
+}
+
+class PomodoroAppBar extends StatelessWidget implements PreferredSizeWidget {
+  final VoidCallback onSettingsPressed;
+  const PomodoroAppBar({required this.onSettingsPressed, super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+      title: const Text(
+        AppString.appTitle,
+        style: TextStyle(color: AppColors.appBarText, fontWeight: FontWeight.w600),
+      ),
+      backgroundColor: AppColors.primary,
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.settings, color: AppColors.appBarText),
+          onPressed: onSettingsPressed,
+          tooltip: AppString.settingsTooltip,
         ),
-        backgroundColor: AppColors.primary,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.settings, color: AppColors.appBarText),
-            onPressed: () {
-              // Open drawer or menu
-            },
-            tooltip: AppString.settingsTooltip,
+      ],
+    );
+  }
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+}
+
+class PomodoroBody extends StatelessWidget {
+  const PomodoroBody({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final controller = Get.find<TimeController>();
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          const Text(
+            AppString.workTime,
+            style: TextStyle(fontSize: 32, fontWeight: FontWeight.w600),
           ),
+          AppMargin.vertical20,
+          Obx(() => Text(controller.formattedTime, style: AppTextStyles.timerText)),
+          AppMargin.vertical20,
+          const PomodoroControlButtons(),
         ],
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              AppString.workTime,
-              style: TextStyle(fontSize: 32, fontWeight: FontWeight.w600),
-            ),
-            AppMargin.vertical20,
-            Obx(() => Text(controller.formattedTime, style: AppTextStyles.timerText)),
-            AppMargin.vertical20,
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Obx(
-                  () => AppButton(
-                    label: controller.isRunning.value ? AppString.pauseTimer : AppString.startTimer,
-                    onPressed:
-                        controller.isRunning.value ? controller.pauseTimer : controller.startTimer,
-                  ),
-                ),
-                AppMargin.horizontal20,
-                AppButton(label: AppString.resetTimer, onPressed: controller.resetTimer),
-              ],
-            ),
-          ],
+    );
+  }
+}
+
+class PomodoroControlButtons extends StatelessWidget {
+  const PomodoroControlButtons({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final controller = Get.find<TimeController>();
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Obx(
+          () => AppButton(
+            label: controller.isRunning ? AppString.pauseTimer : AppString.startTimer,
+            onPressed: controller.isRunning ? controller.pauseTimer : controller.startTimer,
+          ),
         ),
-      ),
+        AppMargin.horizontal20,
+        AppButton(label: AppString.resetTimer, onPressed: controller.resetTimer),
+      ],
     );
   }
 }

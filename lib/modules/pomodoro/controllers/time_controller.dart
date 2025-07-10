@@ -2,40 +2,50 @@ import 'dart:async';
 import 'package:get/get.dart';
 
 class TimeController extends GetxController {
-  static const int pomodoroDuration = 1500;
-  var remainingSeconds = pomodoroDuration.obs;
+  static const int pomodoroDurationSeconds = 1500;
+  final RxInt _remainingSeconds = pomodoroDurationSeconds.obs;
+  final RxBool _isRunning = false.obs;
   Timer? _timer;
-  RxBool isRunning = false.obs;
 
   String get formattedTime {
-    final minute = (remainingSeconds.value ~/ 60).toString().padLeft(2, '0');
-    final seconds = (remainingSeconds.value % 60).toString().padLeft(2, '0');
-    return '$minute:$seconds';
+    final minutes = (_remainingSeconds.value ~/ 60).toString().padLeft(2, '0');
+    final seconds = (_remainingSeconds.value % 60).toString().padLeft(2, '0');
+    return '$minutes:$seconds';
   }
+
+  bool get isRunning => _isRunning.value;
+
+  RxBool get isRunningRx => _isRunning;
+
+  RxInt get remainingSecondsRx => _remainingSeconds;
 
   void startTimer() {
-    if (_timer != null && _timer!.isActive) return;
-    isRunning.value = true;
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (remainingSeconds.value > 0) {
-        remainingSeconds.value--;
-      } else {
-        timer.cancel();
-        isRunning.value = false;
-      }
-    });
-  }
-
-  void resetTimer() {
-    remainingSeconds.value = pomodoroDuration;
-    _timer?.cancel();
-    isRunning.value = false;
-    update();
+    if (_timer?.isActive ?? false) return;
+    _setRunning(true);
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) => _onTick());
   }
 
   void pauseTimer() {
     _timer?.cancel();
-    isRunning = false.obs;
-    update();
+    _setRunning(false);
+  }
+
+  void resetTimer() {
+    _timer?.cancel();
+    _remainingSeconds.value = pomodoroDurationSeconds;
+    _setRunning(false);
+  }
+
+  void _onTick() {
+    if (_remainingSeconds.value > 0) {
+      _remainingSeconds.value--;
+    } else {
+      _timer?.cancel();
+      _setRunning(false);
+    }
+  }
+
+  void _setRunning(bool value) {
+    _isRunning.value = value;
   }
 }
