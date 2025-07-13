@@ -11,6 +11,36 @@ import '../controllers/time_controller.dart';
 class PomodoroScreen extends GetView<TimeController> {
   const PomodoroScreen({super.key});
 
+  void showInputDialog() {
+    int workMinutes = 25;
+    int breakMinutes = 5;
+
+    Get.defaultDialog(
+      title: "Set Durations",
+      content: Column(
+        children: [
+          TextField(
+            keyboardType: TextInputType.number,
+            decoration: InputDecoration(labelText: "Work Duration (minutes)"),
+            onChanged: (value) => workMinutes = int.tryParse(value) ?? 25,
+          ),
+          TextField(
+            keyboardType: TextInputType.number,
+            decoration: InputDecoration(labelText: "Break Duration (minutes)"),
+            onChanged: (value) => breakMinutes = int.tryParse(value) ?? 5,
+          ),
+        ],
+      ),
+      confirm: ElevatedButton(
+        onPressed: () {
+          // controller.setDurations(workMinutes, breakMinutes);
+          Get.back();
+        },
+        child: Text("Save"),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

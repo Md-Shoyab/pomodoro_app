@@ -19,6 +19,14 @@ class TimeController extends GetxController {
 
   RxInt get remainingSecondsRx => _remainingSeconds;
 
+
+  //   void setDurations(int workMinutes, int breakMinutes) {
+  //   workDuration = workMinutes * 60;
+  //   breakDuration = breakMinutes * 60;
+  //   remainingTime = isWorkSession ? workDuration : breakDuration;
+  //   update();
+  // }
+
   void startTimer() {
     if (_timer?.isActive ?? false) return;
     _setRunning(true);
