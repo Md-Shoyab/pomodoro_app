@@ -14,6 +14,7 @@ class PomodoroScreen extends GetView<TimeController> {
   void showInputDialog() {
     int workMinutes = 25;
     int breakMinutes = 5;
+    final controller = Get.find<TimeController>();
 
     Get.defaultDialog(
       title: "Set Durations",
@@ -21,22 +22,22 @@ class PomodoroScreen extends GetView<TimeController> {
         children: [
           TextField(
             keyboardType: TextInputType.number,
-            decoration: InputDecoration(labelText: "Work Duration (minutes)"),
+            decoration: const InputDecoration(labelText: "Work Duration (minutes)"),
             onChanged: (value) => workMinutes = int.tryParse(value) ?? 25,
           ),
           TextField(
             keyboardType: TextInputType.number,
-            decoration: InputDecoration(labelText: "Break Duration (minutes)"),
+            decoration: const InputDecoration(labelText: "Break Duration (minutes)"),
             onChanged: (value) => breakMinutes = int.tryParse(value) ?? 5,
           ),
         ],
       ),
       confirm: ElevatedButton(
         onPressed: () {
-          // controller.setDurations(workMinutes, breakMinutes);
+          controller.setDurations(workMinutes, breakMinutes);
           Get.back();
         },
-        child: Text("Save"),
+        child: const Text("Save"),
       ),
     );
   }
@@ -44,13 +45,9 @@ class PomodoroScreen extends GetView<TimeController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PomodoroAppBar(onSettingsPressed: _onSettingsPressed),
+      appBar: PomodoroAppBar(onSettingsPressed: showInputDialog),
       body: const PomodoroBody(),
     );
-  }
-
-  void _onSettingsPressed() {
-    // Open drawer or menu
   }
 }
 

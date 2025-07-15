@@ -2,8 +2,14 @@ import 'dart:async';
 import 'package:get/get.dart';
 
 class TimeController extends GetxController {
-  static const int pomodoroDurationSeconds = 1500;
-  final RxInt _remainingSeconds = pomodoroDurationSeconds.obs;
+  static const int defaultWorkDurationSeconds = 1500;
+  static const int defaultBreakDurationSeconds = 300;
+
+  int _workDuration = defaultWorkDurationSeconds;
+  int _breakDuration = defaultBreakDurationSeconds;
+  bool _isWorkSession = true;
+
+  final RxInt _remainingSeconds = defaultWorkDurationSeconds.obs;
   final RxBool _isRunning = false.obs;
   Timer? _timer;
 
@@ -14,18 +20,16 @@ class TimeController extends GetxController {
   }
 
   bool get isRunning => _isRunning.value;
-
   RxBool get isRunningRx => _isRunning;
-
   RxInt get remainingSecondsRx => _remainingSeconds;
 
-
-  //   void setDurations(int workMinutes, int breakMinutes) {
-  //   workDuration = workMinutes * 60;
-  //   breakDuration = breakMinutes * 60;
-  //   remainingTime = isWorkSession ? workDuration : breakDuration;
-  //   update();
-  // }
+  void setDurations(int workMinutes, int breakMinutes) {
+    _workDuration = workMinutes * 60;
+    _breakDuration = breakMinutes * 60;
+    _isWorkSession = true;
+    _remainingSeconds.value = _workDuration;
+    _setRunning(false);
+  }
 
   void startTimer() {
     if (_timer?.isActive ?? false) return;
@@ -40,7 +44,7 @@ class TimeController extends GetxController {
 
   void resetTimer() {
     _timer?.cancel();
-    _remainingSeconds.value = pomodoroDurationSeconds;
+    _remainingSeconds.value = _isWorkSession ? _workDuration : _breakDuration;
     _setRunning(false);
   }
 
@@ -50,6 +54,9 @@ class TimeController extends GetxController {
     } else {
       _timer?.cancel();
       _setRunning(false);
+      // Optionally, switch between work and break sessions here
+      // _isWorkSession = !_isWorkSession;
+      // _remainingSeconds.value = _isWorkSession ? _workDuration : _breakDuration;
     }
   }
 
