@@ -6,4 +6,7 @@ abstract class AppString {
   static const String pauseTimer = 'Pause Timer';
   static const String resetTimer = 'Reset Timer';
   static const String settingsTooltip = 'Settings';
+  static const String setDurations = 'Set Durations';
+  static const String workDurationInMinutes = 'Work Duration (minutes)';
+  static const String breakDurationInMinutes = 'Break Duration (minutes)';
 }

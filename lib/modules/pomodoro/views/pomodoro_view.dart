@@ -17,17 +17,17 @@ class PomodoroScreen extends GetView<TimeController> {
     final controller = Get.find<TimeController>();
 
     Get.defaultDialog(
-      title: "Set Durations",
+      title: AppString.setDurations,
       content: Column(
         children: [
           TextField(
             keyboardType: TextInputType.number,
-            decoration: const InputDecoration(labelText: "Work Duration (minutes)"),
+            decoration: const InputDecoration(labelText: AppString.workDurationInMinutes),
             onChanged: (value) => workMinutes = int.tryParse(value) ?? 25,
           ),
           TextField(
             keyboardType: TextInputType.number,
-            decoration: const InputDecoration(labelText: "Break Duration (minutes)"),
+            decoration: const InputDecoration(labelText: AppString.breakDurationInMinutes),
             onChanged: (value) => breakMinutes = int.tryParse(value) ?? 5,
           ),
         ],

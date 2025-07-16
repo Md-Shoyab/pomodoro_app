@@ -1,32 +1,31 @@
 import 'dart:async';
+
 import 'package:get/get.dart';
 
 class TimeController extends GetxController {
-  static const int defaultWorkDurationSeconds = 1500;
-  static const int defaultBreakDurationSeconds = 300;
-
-  int _workDuration = defaultWorkDurationSeconds;
-  int _breakDuration = defaultBreakDurationSeconds;
-  bool _isWorkSession = true;
-
-  final RxInt _remainingSeconds = defaultWorkDurationSeconds.obs;
+  final RxInt _remainingSeconds = 1500.obs;
   final RxBool _isRunning = false.obs;
+  final RxBool _isWorkSession = true.obs;
+
+  late int _workDuration;
+  late int _breakDuration;
   Timer? _timer;
 
   String get formattedTime {
-    final minutes = (_remainingSeconds.value ~/ 60).toString().padLeft(2, '0');
-    final seconds = (_remainingSeconds.value % 60).toString().padLeft(2, '0');
-    return '$minutes:$seconds';
+    final duration = Duration(seconds: _remainingSeconds.value);
+    final hours = duration.inHours.toString().padLeft(2, '0');
+    final minutes = (duration.inMinutes % 60).toString().padLeft(2, '0');
+    final seconds = (duration.inSeconds % 60).toString().padLeft(2, '0');
+    return '$hours:$minutes:$seconds';
   }
 
+  String get sessionLabel => _isWorkSession.value ? "Work" : "Break";
   bool get isRunning => _isRunning.value;
-  RxBool get isRunningRx => _isRunning;
-  RxInt get remainingSecondsRx => _remainingSeconds;
 
   void setDurations(int workMinutes, int breakMinutes) {
     _workDuration = workMinutes * 60;
     _breakDuration = breakMinutes * 60;
-    _isWorkSession = true;
+    _isWorkSession.value = true;
     _remainingSeconds.value = _workDuration;
     _setRunning(false);
   }
@@ -34,7 +33,7 @@ class TimeController extends GetxController {
   void startTimer() {
     if (_timer?.isActive ?? false) return;
     _setRunning(true);
-    _timer = Timer.periodic(const Duration(seconds: 1), (_) => _onTick());
+    _timer = Timer.periodic(Duration(seconds: 1), (_) => _onTick());
   }
 
   void pauseTimer() {
@@ -42,9 +41,11 @@ class TimeController extends GetxController {
     _setRunning(false);
   }
 
+  void toggleTimer() => isRunning ? pauseTimer() : startTimer();
+
   void resetTimer() {
     _timer?.cancel();
-    _remainingSeconds.value = _isWorkSession ? _workDuration : _breakDuration;
+    _remainingSeconds.value = _isWorkSession.value ? _workDuration : _breakDuration;
     _setRunning(false);
   }
 
@@ -53,14 +54,19 @@ class TimeController extends GetxController {
       _remainingSeconds.value--;
     } else {
       _timer?.cancel();
-      _setRunning(false);
-      // Optionally, switch between work and break sessions here
-      // _isWorkSession = !_isWorkSession;
-      // _remainingSeconds.value = _isWorkSession ? _workDuration : _breakDuration;
+      _isWorkSession.toggle();
+      _remainingSeconds.value = _isWorkSession.value ? _workDuration : _breakDuration;
+      startTimer(); // auto-switch
     }
   }
 
   void _setRunning(bool value) {
     _isRunning.value = value;
+  }
+
+  @override
+  void onClose() {
+    _timer?.cancel();
+    super.onClose();
   }
 }
