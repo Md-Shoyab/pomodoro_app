@@ -37,7 +37,7 @@ class PomodoroScreen extends GetView<TimeController> {
           controller.setDurations(workMinutes, breakMinutes);
           Get.back();
         },
-        child: const Text("Save"),
+        child: const Text(AppString.save),
       ),
     );
   }

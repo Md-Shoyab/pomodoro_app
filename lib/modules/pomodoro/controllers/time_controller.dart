@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:get/get.dart';
+import 'package:pomodoro_app/constants/app_strings.dart';
 
 class TimeController extends GetxController {
   final RxInt _remainingSeconds = 1500.obs;
@@ -19,7 +20,7 @@ class TimeController extends GetxController {
     return '$hours:$minutes:$seconds';
   }
 
-  String get sessionLabel => _isWorkSession.value ? "Work" : "Break";
+  String get sessionLabel => _isWorkSession.value ? AppString.work : AppString.breakText;
   bool get isRunning => _isRunning.value;
 
   void setDurations(int workMinutes, int breakMinutes) {
@@ -56,7 +57,7 @@ class TimeController extends GetxController {
       _timer?.cancel();
       _isWorkSession.toggle();
       _remainingSeconds.value = _isWorkSession.value ? _workDuration : _breakDuration;
-      startTimer(); // auto-switch
+      startTimer();
     }
   }
 
