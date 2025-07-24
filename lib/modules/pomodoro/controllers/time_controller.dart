@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:audioplayers/audioplayers.dart';
 import 'package:get/get.dart';
 import 'package:pomodoro_app/constants/app_strings.dart';
 
@@ -11,6 +12,7 @@ class TimeController extends GetxController {
   late int _workDuration;
   late int _breakDuration;
   Timer? _timer;
+  final player = AudioPlayer();
 
   String get formattedTime {
     final duration = Duration(seconds: _remainingSeconds.value);
@@ -63,6 +65,10 @@ class TimeController extends GetxController {
 
   void _setRunning(bool value) {
     _isRunning.value = value;
+  }
+
+  void playAlarm() async {
+    await player.play(AssetSource('sounds/alarm.mp3'));
   }
 
   @override
