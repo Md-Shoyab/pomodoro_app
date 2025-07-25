@@ -56,10 +56,11 @@ class TimeController extends GetxController {
     if (_remainingSeconds.value > 0) {
       _remainingSeconds.value--;
     } else {
+      _playAlarm();
       _timer?.cancel();
       _isWorkSession.toggle();
       _remainingSeconds.value = _isWorkSession.value ? _workDuration : _breakDuration;
-      startTimer();
+      _setRunning(false); 
     }
   }
 
@@ -67,8 +68,8 @@ class TimeController extends GetxController {
     _isRunning.value = value;
   }
 
-  void playAlarm() async {
-    await player.play(AssetSource('sounds/alarm.mp3'));
+  void _playAlarm() async {
+    await player.play(AssetSource('sounds/hou_karam_sarkar.mp3'));
   }
 
   @override
