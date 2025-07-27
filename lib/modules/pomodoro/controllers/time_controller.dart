@@ -1,7 +1,8 @@
 import 'dart:async';
 
-import 'package:audioplayers/audioplayers.dart';
 import 'package:get/get.dart';
+import 'package:flutter/material.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:pomodoro_app/constants/app_strings.dart';
 
 class TimeController extends GetxController {
@@ -60,7 +61,7 @@ class TimeController extends GetxController {
       _timer?.cancel();
       _isWorkSession.toggle();
       _remainingSeconds.value = _isWorkSession.value ? _workDuration : _breakDuration;
-      _setRunning(false); 
+      _setRunning(false);
     }
   }
 
@@ -69,7 +70,11 @@ class TimeController extends GetxController {
   }
 
   void _playAlarm() async {
-    await player.play(AssetSource('sounds/hou_karam_sarkar.mp3'));
+    try {
+      await player.play(AssetSource(AppString.alarmSoundPath));
+    } catch (e) {
+      debugPrint('~~~>Alarm sound error: $e');
+    }
   }
 
   @override

@@ -12,4 +12,5 @@ abstract class AppString {
   static const String setDurations = 'Set Durations';
   static const String workDurationInMinutes = 'Work Duration (minutes)';
   static const String breakDurationInMinutes = 'Break Duration (minutes)';
+  static const String alarmSoundPath = 'sounds/hou_karam_sarkar.mp3';
 }
