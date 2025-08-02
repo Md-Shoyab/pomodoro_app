@@ -12,8 +12,8 @@ class TimeController extends GetxController {
   final RxBool _isRunning = false.obs;
   final RxBool _isWorkSession = true.obs;
 
-  late int _workDuration;
-  late int _breakDuration;
+  int _workDuration = 1500;
+  int _breakDuration = 300;
   Timer? _timer;
   final player = AudioPlayer();
 
@@ -51,8 +51,11 @@ class TimeController extends GetxController {
 
   void resetTimer() {
     _timer?.cancel();
-    _remainingSeconds.value = _isWorkSession.value ? _workDuration : _breakDuration;
     _setRunning(false);
+    // Optionally reset to work session, uncomment if needed:
+    // _isWorkSession.value = true;
+    _remainingSeconds.value = _isWorkSession.value ? _workDuration : _breakDuration;
+    update(); // Ensure UI updates
   }
 
   void _onTick() {
