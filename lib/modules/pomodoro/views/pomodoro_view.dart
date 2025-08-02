@@ -87,8 +87,8 @@ class PomodoroBody extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          const Text(
-            AppString.workTime,
+          Text(
+            controller.sessionLabel,
             style: TextStyle(fontSize: 32, fontWeight: FontWeight.w600),
           ),
           AppMargin.vertical20,

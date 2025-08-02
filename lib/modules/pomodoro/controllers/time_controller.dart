@@ -1,9 +1,11 @@
 import 'dart:async';
 
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:pomodoro_app/constants/app_strings.dart';
+import 'package:pomodoro_app/main.dart';
 
 class TimeController extends GetxController {
   final RxInt _remainingSeconds = 1500.obs;
@@ -23,7 +25,7 @@ class TimeController extends GetxController {
     return '$hours:$minutes:$seconds';
   }
 
-  String get sessionLabel => _isWorkSession.value ? AppString.work : AppString.breakText;
+  String get sessionLabel => _isWorkSession.value ? AppString.workTime : AppString.breakTime;
   bool get isRunning => _isRunning.value;
 
   void setDurations(int workMinutes, int breakMinutes) {
@@ -37,7 +39,7 @@ class TimeController extends GetxController {
   void startTimer() {
     if (_timer?.isActive ?? false) return;
     _setRunning(true);
-    _timer = Timer.periodic(Duration(seconds: 1), (_) => _onTick());
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) => _onTick());
   }
 
   void pauseTimer() {
@@ -57,11 +59,13 @@ class TimeController extends GetxController {
     if (_remainingSeconds.value > 0) {
       _remainingSeconds.value--;
     } else {
-      _playAlarm();
       _timer?.cancel();
       _isWorkSession.toggle();
       _remainingSeconds.value = _isWorkSession.value ? _workDuration : _breakDuration;
       _setRunning(false);
+
+      _showNotification();
+      _playAlarm();
     }
   }
 
@@ -71,15 +75,49 @@ class TimeController extends GetxController {
 
   void _playAlarm() async {
     try {
-      await player.play(AssetSource(AppString.alarmSoundPath));
+      debugPrint('~~~> Playing alarm sound from: ${AppString.alarmSoundPath}');
+      await player.setSource(AssetSource(AppString.alarmSoundPath));
+      await player.resume();
     } catch (e) {
-      debugPrint('~~~>Alarm sound error: $e');
+      debugPrint('~~~> Alarm sound error: $e');
     }
+  }
+
+  void _showNotification() async {
+    final isNowWork = _isWorkSession.value;
+
+    final title = 'Pomodoro App';
+    final body =
+        isNowWork
+            ? '☕ Break over! Let’s get back to work.'
+            : '⏰ Work session complete! Time to take a break.';
+
+    final androidDetails = AndroidNotificationDetails(
+      'pomodoro_channel',
+      'Pomodoro Notifications',
+      channelDescription: 'Notifications for Pomodoro timer',
+      importance: Importance.max,
+      priority: Priority.high,
+      playSound: true,
+      enableVibration: true,
+    );
+
+    final iosDetails = DarwinNotificationDetails(
+      sound: 'default',
+      presentAlert: true,
+      presentBadge: true,
+      presentSound: true,
+    );
+
+    final notificationDetails = NotificationDetails(android: androidDetails, iOS: iosDetails);
+
+    await flutterLocalNotificationsPlugin.show(0, title, body, notificationDetails);
   }
 
   @override
   void onClose() {
     _timer?.cancel();
+    player.dispose();
     super.onClose();
   }
 }

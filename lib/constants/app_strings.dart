@@ -1,6 +1,7 @@
 abstract class AppString {
   static const String appTitle = 'Pomodoro App';
   static const String workTime = 'Work Time';
+  static const String breakTime = 'Break Time';
   static const String runningTimer = '25:00';
   static const String work = 'Work';
   static const String breakText = 'Break';
